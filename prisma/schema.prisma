@@ -12,3 +12,64 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model Product {
+  id String @id @default(uuid()) @map("product_id")
+  categoryName String? @map("product_category_name")
+  description String? @db.Text
+  nameLength Int? @map("product_name_lenght")
+  descriptionLength Int? @map("product_description_lenght")
+  photosQty Int? @map("product_photos_qty")
+  weight Int? @map("product_weight_g")
+  length Int? @map("product_length_cm")
+  height Int? @map("product_height_cm")
+  width Int? @map("product_width_cm")
+
+
+  // Olistのデータには「商品名」列がなくカテゴリ名だけのことが多いですが、
+  // アプリとして成立させるためにこれらのフィールドを用意します。
+  // CSV読み込み時に工夫します。
+
+  orderItems OrderItem[]
+
+  @@map("products")
+
+}
+
+// カテゴリ名をポルトガル語から英語に翻訳
+model ProductCategoryTranslation {
+  cagegoryName String @id @map("product_category_name")
+  cagegoryNameEng String @map("product_category_name_english")
+
+  @@map("product_category_name_translation")
+}
+
+model OrderItem {
+  id String @id @default(uuid())
+  orderId String @map("order_id")
+  orderItemId String @map("order_item_id") // 商品の個数？？
+
+  // TODO: seller_id
+
+  productId String @map("product_id")
+  product Product @relation(fields: [productId], references: [id])
+
+  shippingLimitDate DateTime @map("shipping_limit_date")
+  price Float @map("price")
+  freight Float @map("freight_value")
+
+  @@map("order_items")
+}
+
+model Order {
+  id String @id @default(uuid()) @map("order_id")
+  // TODO: customer_id
+  status String @map("order_status") @default("unavailable")
+  purchase DateTime @map("order_purchase_timestamp")
+  approcedAt DateTime? @map("order_approved_at")
+  deliveredCarrierDate DateTime? @map("order_delivered_carrier_date")
+  deliveredCustomerDate DateTime? @map("order_delivered_customer_date")
+  estimatedDeliveryDate DateTime @map("order_estimated_delivery_date")
+
+  @@map("orders")
+}
