@@ -42,3 +42,9 @@ yarn-error.log*
 next-env.d.ts
 
 /generated/prisma
+
+# local postgres data
+/postgres_data
+
+# local csv
+/archive
