@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { notFound } from "next/navigation";
 
 export const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -33,4 +34,33 @@ export async function getProducts(query?: string) {
         description: p.description,
         price: p.orderItems[0]?.price || 0,
     }));
+}
+
+// IDによる商品詳細取得関数
+export async function getProductById(id: string) {
+    const product = await prisma.product.findUnique({
+        where: { id: id },
+        include: {
+            orderItems: {
+                take: 1,
+                select: {
+                    price: true,
+                    freight: true,
+                }
+            }
+        }
+    })
+
+    if (!product) {
+        notFound();
+        return null;
+    }
+
+    return {
+        id: product.id,
+        category: product.categoryName,
+        description: product.description,
+        price: product.orderItems[0]?.price || 0,
+        freight: product.orderItems[0]?.freight || 0,
+    }
 }
