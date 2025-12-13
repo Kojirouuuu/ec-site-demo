@@ -46,3 +46,9 @@ npm install prisma @types/node @types/pg --save-dev
 npm install @prisma/client @prisma/adapter-pg pg dotenv
 npx prisma init --datasource-provider postgresql --output ../generated/prisma
 ```
+
+prisma/schema.prismaを作成
+
+```bash
+npx prisma db push
+```
