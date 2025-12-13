@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Product {
+  id                String      @id @default(uuid()) @map("product_id")
+  categoryName      String?     @map("product_category_name")
+  description       String?
+  nameLength        Int?        @map("product_name_lenght")
+  descriptionLength Int?        @map("product_description_lenght")
+  photosQty         Int?        @map("product_photos_qty")
+  weight            Int?        @map("product_weight_g")
+  length            Int?        @map("product_length_cm")
+  height            Int?        @map("product_height_cm")
+  width             Int?        @map("product_width_cm")
+  orderItems        OrderItem[]
+
+  @@map("products")
+}
+
+model ProductCategoryTranslation {
+  cagegoryName    String @id @map("product_category_name")
+  cagegoryNameEng String @map("product_category_name_english")
+
+  @@map("product_category_name_translation")
+}
+
+model OrderItem {
+  id                String   @id @default(uuid())
+  orderId           String   @map("order_id")
+  orderItemId       String   @map("order_item_id")
+  productId         String   @map("product_id")
+  shippingLimitDate DateTime @map("shipping_limit_date")
+  price             Float    @map("price")
+  freight           Float    @map("freight_value")
+  product           Product  @relation(fields: [productId], references: [id])
+
+  @@map("order_items")
+}
+
+model Order {
+  id                    String    @id @default(uuid()) @map("order_id")
+  status                String    @default("unavailable") @map("order_status")
+  purchase              DateTime  @map("order_purchase_timestamp")
+  approcedAt            DateTime? @map("order_approved_at")
+  deliveredCarrierDate  DateTime? @map("order_delivered_carrier_date")
+  deliveredCustomerDate DateTime? @map("order_delivered_customer_date")
+  estimatedDeliveryDate DateTime  @map("order_estimated_delivery_date")
+
+  @@map("orders")
+}
